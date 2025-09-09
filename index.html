@@ -7,7 +7,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        /* Estilos anteriores se mantienen igual */
+        /* Estilos se mantienen igual */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -541,7 +541,8 @@
                     }
                 },
                 complete: function(results) {
-                    if (results.data.length === 0) {
+                    // Verificar que se procesaron datos
+                    if (userData.length === 0) {
                         showStatus('El archivo CSV está vacío o no tiene datos válidos', 'error');
                         showProgress(false);
                         return;
