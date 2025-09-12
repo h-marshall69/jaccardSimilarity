@@ -1,4 +1,5 @@
-from .csv_processor import CSVProcessor
+from .nltk_utils import SpanishWordNetUtils
+from .visualization import VisualizationUtils
 
 # Exportar las utilidades para fácil acceso
-__all__ = ['CSVProcessor']
+__all__ = ['SpanishWordNetUtils', 'VisualizationUtils']

@@ -1,3 +1,9 @@
 Flask
 pandas
 python-dotenv
+numpy
+scikit-learn
+matplotlib
+seaborn
+nltk
+scipy

@@ -3,7 +3,6 @@ usuario2,aventura,historia,musical,drama,thriller
 usuario3,animación,acción,fantasía,suspenso,biografía
 usuario4,western,crimen,épico,romántico,independiente
 usuario5,drama,thriller,acción,ciencia_ficcion,comedia
-usuario1,ciencia_ficcion,comedia,documental,romance,terror
 usuario6,aventura,animación,superhéroes,thriller,catástrofe
 usuario7,musical,romance,historia,biografía,familiar
 usuario8,ciencia_ficcion,cyberpunk,distopía,acción,suspenso
@@ -14,5 +13,8 @@ usuario12,fantasía,medieval,épico,aventura,mitología
 usuario13,noir,policíaco,suspenso,investigación,thriller
 usuario14,deportes,competencia,drama,biografía,musical
 usuario15,independiente,arte,experimental,festival,drama
-usuario2,animación,infantil,familiar,aventura,comedia
-usuario3,ciencia_ficcion,espacial,alienígenas,tecnología,thriller
+usuario16,animación,infantil,familiar,aventura,comedia
+usuario17,ciencia_ficcion,espacial,alienígenas,tecnología,thriller
+usuario18,guerra,misterio,road_movie,coming_of_age,zombis
+usuario19,vampiros,culto,psicológico,surrealista,animación_adulta
+usuario20,mockumentary,romance_histórico,espionaje,superheroes_oscuro,fantasía_urbana

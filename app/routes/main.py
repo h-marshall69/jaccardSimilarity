@@ -1,12 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+import os
+from werkzeug.utils import secure_filename
+
+# Importar servicios
 from app.services.file_service import FileService
-from app.utils.csv_processor import CSVProcessor
+from app.services.similarity_service import SimilarityService
 
 main_bp = Blueprint('main', __name__)
 
 # Inicializar servicios
 file_service = FileService()
-csv_processor = CSVProcessor()
+similarity_service = SimilarityService()
 
 @main_bp.route('/', methods=['GET', 'POST'])
 def index():
@@ -21,15 +25,17 @@ def index():
         if error:
             flash(error)
             return redirect(request.url)
-        
-        info, error = csv_processor.process_file(file_info['filepath'])
+
+
+        # Procesar el dataset con similitud
+        results, error = similarity_service.process_dataset(file_info['filepath'])
         
         if error:
             flash(error)
             file_service.delete_file(file_info['filepath'])
             return redirect(request.url)
         
-        flash('Archivo subido y procesado correctamente!')
-        return render_template('results.html', info=info, filename=file_info['filename'])
+        flash('Dataset procesado correctamente!')
+        return render_template('results.html', results=results, filename=file_info['filename'])
     
     return render_template('index.html')
