@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %} Jaccard Similarity {% endblock %}
+
+{% block header %} Results {% endblock %}
+
+{% block content %}
+<div class="results">
+    <h2>Resultados del procesamiento: {{ filename }}</h2>
+    
+    <div class="file-info">
+        <h3>📋 Información del archivo</h3>
+        <p><strong>Filas:</strong> {{ info.total_rows }}</p>
+        <p><strong>Columnas:</strong> {{ info.total_columns }}</p>
+    </div>
+    
+    <div class="columns-info">
+        <h3>🏷️ Columnas</h3>
+        <ul>
+            {% for column in info.column_names %}
+            <li>{{ column }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="sample-data">
+        <h3>📊 Muestra de datos (primeras 10 filas)</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in info.column_names %}
+                        <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in info.sample_data %}
+                    <tr>
+                        {% for column in info.column_names %}
+                        <td>{{ row[column] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('main.index') }}" class="btn">Subir otro archivo</a>
+</div>
+{% endblock %}
