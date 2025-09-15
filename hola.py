@@ -138,7 +138,7 @@ class NLPProcessor:
 class UserPreferencesApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Preferencias de Usuarios")
+        self.root.title("Análisis de Preferencias de Usuarios - NLP Mejorado")
         self.root.geometry("1200x800")
         self.root.configure(bg='#f0f0f0')
         
