@@ -179,7 +179,6 @@ class UserPreferencesApp:
     
     def _setup_ui(self):
         """Configurar la interfaz de usuario"""
-        # ... (el mismo código de UI que antes) ...
         # Marco principal
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -272,7 +271,7 @@ class UserPreferencesApp:
         if file_path:
             try:
                 # Cargar ontología desde archivo si existe
-                ontology_path = "C:/Users/ferna/Desktop/borrar/ontology.json"
+                ontology_path = "C:/Users/ferna/Desktop/jaccardSimilarity/ontology.json"
                 try:
                     self.genre_ontology = self.load_ontology_from_file(ontology_path)
                     self.info_text.insert(tk.END, f"✓ Ontología cargada desde {ontology_path}\n")
@@ -384,7 +383,6 @@ class UserPreferencesApp:
     
     def process_data(self):
         """Procesar datos y calcular matriz de similitud"""
-        # ... (el mismo código de process_data que antes) ...
         if not self.user_preferences:
             messagebox.showwarning("Advertencia", "Primero carga un archivo CSV")
             return
@@ -471,9 +469,8 @@ class UserPreferencesApp:
         scrollbar.grid(row=1, column=0, sticky=(tk.W, tk.E))
         canvas.get_tk_widget().configure(xscrollcommand=scrollbar.set)
     
-    
     def show_similarity_matrix(self):
-        """Mostrar matriz de similitud como heatmap"""
+        """Mostrar matriz de similitud como tabla de datos"""
         if self.similarity_matrix is None:
             messagebox.showwarning("Advertencia", "Primero procesa los datos")
             return
@@ -482,29 +479,83 @@ class UserPreferencesApp:
         for widget in self.viz_frame.winfo_children():
             widget.destroy()
         
-        # Crear figura
-        fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+        # Crear ventana emergente para la tabla
+        matrix_window = tk.Toplevel(self.root)
+        matrix_window.title("Matriz de Similitud - Vista de Datos")
+        matrix_window.geometry("800x600")
         
-        # Crear heatmap
+        # Crear frame principal con scrollbars
+        main_frame = ttk.Frame(matrix_window)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Crear canvas y scrollbars
+        canvas = tk.Canvas(main_frame)
+        v_scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+        h_scrollbar = ttk.Scrollbar(main_frame, orient="horizontal", command=canvas.xview)
+        
+        # Configurar canvas
+        canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        
+        # Empaquetar scrollbars y canvas
+        v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Crear frame interno para la tabla
+        table_frame = ttk.Frame(canvas)
+        canvas.create_window((0, 0), window=table_frame, anchor="nw")
+        
+        # Obtener usuarios y datos
         users = list(self.user_preferences.keys())
-        sns.heatmap(self.similarity_matrix, 
-                   xticklabels=users, 
-                   yticklabels=users,
-                   annot=False, 
-                   cmap='viridis',
-                   square=True,
-                   ax=ax)
+        n_users = len(users)
         
-        ax.set_title('Matriz de Similitud entre Usuarios', fontsize=14, fontweight='bold')
-        plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
-        plt.setp(ax.get_yticklabels(), rotation=0)
+        # Crear encabezados de columnas
+        for j, user in enumerate(users):
+            ttk.Label(table_frame, text=user, borderwidth=1, relief="solid", 
+                     width=12, background="#f0f0f0", anchor="center").grid(row=0, column=j+1, sticky="nsew")
         
-        fig.tight_layout()
+        # Crear filas con datos
+        for i, user_row in enumerate(users):
+            # Nombre de usuario en la primera columna
+            ttk.Label(table_frame, text=user_row, borderwidth=1, relief="solid", 
+                     width=12, background="#f0f0f0", anchor="center").grid(row=i+1, column=0, sticky="nsew")
+            
+            # Valores de similitud
+            for j, user_col in enumerate(users):
+                similarity = self.similarity_matrix[i][j]
+                # Determinar color de fondo basado en el valor de similitud
+                color_intensity = int(255 * (1 - similarity))  # Invertido para mejor contraste
+                bg_color = f"#{color_intensity:02x}{color_intensity:02x}ff"  # Azul más intenso para mayor similitud
+                
+                label = ttk.Label(table_frame, text=f"{similarity:.3f}", borderwidth=1, 
+                                 relief="solid", width=12, anchor="center")
+                label.grid(row=i+1, column=j+1, sticky="nsew")
+                
+                # Aplicar color de fondo (necesitamos usar tk.Label para bg)
+                tk_label = tk.Label(table_frame, text=f"{similarity:.3f}", borderwidth=1, 
+                                   relief="solid", width=12, anchor="center", bg=bg_color)
+                tk_label.grid(row=i+1, column=j+1, sticky="nsew")
         
-        # Integrar en tkinter
-        canvas = FigureCanvasTkAgg(fig, self.viz_frame)
-        canvas.draw()
-        canvas.get_tk_widget().grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        # Configurar grid para expandirse
+        for i in range(n_users + 1):
+            table_frame.rowconfigure(i, weight=1)
+        for j in range(n_users + 1):
+            table_frame.columnconfigure(j, weight=1)
+        
+        # Actualizar scrollregion después de crear los widgets
+        def configure_scroll_region(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+        
+        table_frame.bind("<Configure>", configure_scroll_region)
+        
+        # Añadir leyenda
+        legend_frame = ttk.Frame(matrix_window)
+        legend_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
+        
+        ttk.Label(legend_frame, text="Leyenda: ").pack(side=tk.LEFT)
+        ttk.Label(legend_frame, text="Baja similitud", background="#ffff00").pack(side=tk.LEFT, padx=5)
+        ttk.Label(legend_frame, text="Media similitud", background="#8888ff").pack(side=tk.LEFT, padx=5)
+        ttk.Label(legend_frame, text="Alta similitud", background="#0000ff", foreground="white").pack(side=tk.LEFT, padx=5)
     
     def get_recommendations(self):
         """Obtener recomendaciones para usuario seleccionado"""
